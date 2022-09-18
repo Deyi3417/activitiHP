@@ -38,34 +38,26 @@ public class ActivitiServiceImpl implements ActivitiService {
     @Override
     public void startProcess() {
         ProcessInstance test = runtimeService.startProcessInstanceByKey("test");
-        log.info(
-                "--{}--{}--{}--{}--{}", test.getBusinessKey(), test.getDescription(), test.getProcessDefinitionId(), test.getId(), test.getActivityId());
+        log.info("--{}--{}--{}--{}--{}", test.getBusinessKey(), test.getDescription(), test.getProcessDefinitionId(), test.getId(), test.getActivityId());
     }
 
     @Override
     public Deployment deployBpmn(String bpmnName, String filePathAndName) {
-        Deployment deploy = repositoryService.createDeployment()
-                .name(bpmnName)
-                .addClasspathResource(filePathAndName)
-                .deploy();
+        Deployment deploy = repositoryService.createDeployment().name(bpmnName).addClasspathResource(filePathAndName).deploy();
         log.info("========部署完成========{}", deploy);
         return deploy;
     }
 
     @Override
     public List<Task> getTasks(String assignee) {
-        List<Task> list = taskService.createTaskQuery()
-                .taskAssignee(assignee).list();
+        List<Task> list = taskService.createTaskQuery().taskAssignee(assignee).list();
         log.info("========list:========{}", list);
         return list;
     }
 
     @Override
     public List<Task> getTasks(String processDefinitionKey, String assignee) {
-        List<Task> tasks = taskService.createTaskQuery()
-                .processDefinitionKey(processDefinitionKey)
-                .taskAssignee(assignee)
-                .list();
+        List<Task> tasks = taskService.createTaskQuery().processDefinitionKey(processDefinitionKey).taskAssignee(assignee).list();
         log.info("========tasks:========{}", tasks);
         // 打印部分信息
         for (Task task : tasks) {
@@ -83,13 +75,27 @@ public class ActivitiServiceImpl implements ActivitiService {
         // todo 更新businessKey关联的业务信息
     }
 
+    /**
+     * 完成任务，判断当前用户是否由权限
+     *
+     * @param taskId   任务id
+     * @param assignee 做任务的用户
+     */
+    public void completeTask2(String taskId, String assignee) {
+        // 完成任务前，需要校验负责人可以完成当前任务
+        // 根据任务id 和 任务负责人查询当前任务，如果查到该用户由权限，就完成
+        Task task = taskService.createTaskQuery().taskId(taskId).taskAssignee(assignee).singleResult();
+        if (task != null) {
+            taskService.complete(taskId);
+            log.info("========完成任务========{}", task.getId());
+        }
+
+    }
+
     @Override
     public Task completeTask(String processDefinitionKey, String assignee) {
         // 根据流程实例 key 和 指派人 获取任务
-        Task task = taskService.createTaskQuery()
-                .processDefinitionKey(processDefinitionKey)
-                .taskAssignee(assignee)
-                .singleResult();
+        Task task = taskService.createTaskQuery().processDefinitionKey(processDefinitionKey).taskAssignee(assignee).singleResult();
         if (task == null) {
             return null;
         }
@@ -103,11 +109,7 @@ public class ActivitiServiceImpl implements ActivitiService {
 
     @Override
     public Deployment deployBpmn(String bpmnName, String filePathAndName, String pngPath) {
-        Deployment deploy = repositoryService.createDeployment()
-                .name(bpmnName)
-                .addClasspathResource(filePathAndName)
-                .addClasspathResource(pngPath)
-                .deploy();
+        Deployment deploy = repositoryService.createDeployment().name(bpmnName).addClasspathResource(filePathAndName).addClasspathResource(pngPath).deploy();
         log.info("========部署完成========{}", deploy);
         return deploy;
     }
@@ -121,8 +123,7 @@ public class ActivitiServiceImpl implements ActivitiService {
         log.info("========instance.getActivityId():当前活动ID========{}", instance.getActivityId());
         if (instance.getId().length() > 0) {
             // 获取流程启动产生的taskId
-            String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId())
-                    .singleResult().getId();
+            String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).singleResult().getId();
             log.info("=======taskId========{}", taskId);
             log.info("=======instance.getProcessInstanceId()========{}", instance.getProcessInstanceId());
             log.info("=======instance.getProcessDefinitionId()========{}", instance.getProcessDefinitionId());
@@ -149,8 +150,7 @@ public class ActivitiServiceImpl implements ActivitiService {
         log.info("========startHoliday========{}", processInstance);
         if (processInstance.getProcessInstanceId().length() > 0) {
             // 获取流程启动产生的taskId
-            String taskId = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId())
-                    .singleResult().getId();
+            String taskId = taskService.createTaskQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult().getId();
             log.info("=======taskId========{}", taskId);
             // 自动完成第一个提交
             taskService.complete(taskId);
@@ -170,6 +170,24 @@ public class ActivitiServiceImpl implements ActivitiService {
         log.info("========businessKey========{}", businessKeyRes);
     }
 
+    /**
+     * 根据定义的流程实例key和assignee获取businessKey
+     *
+     * @param processDefinitionKey 流程实例key
+     * @param assignee             指派人
+     */
+    public void findProcessInstance(String processDefinitionKey, String assignee) {
+        // 查询流程定义的对象
+        Task task = taskService.createTaskQuery().processDefinitionKey(processDefinitionKey).taskAssignee(assignee).singleResult();
+        // 使用task对象获取实例ID
+        String processInstanceId = task.getProcessInstanceId();
+        // 使用实例ID, 获取流程实例对象
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+        // 使用processInstance, 得到businessKey
+        String businessKey = processInstance.getBusinessKey();
+        log.info("========businessKey========{}", businessKey);
+    }
+
     @Override
     public boolean startProcessInstanceWithVariable(StartProcessInstanceVO processInstanceVO) {
         String processDefinitionKey = processInstanceVO.getProcessDefinitionKey();
@@ -181,8 +199,7 @@ public class ActivitiServiceImpl implements ActivitiService {
         ProcessInstance instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
         if (instance.getId().length() > 0) {
             // 获取流程启动产生的taskId
-            String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId())
-                    .singleResult().getId();
+            String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).singleResult().getId();
             log.info("=======taskId========{}", taskId);
             log.info("=======instance.getProcessInstanceId()========{}", instance.getProcessInstanceId());
             log.info("=======instance.getProcessDefinitionId()========{}", instance.getProcessDefinitionId());
@@ -226,6 +243,10 @@ public class ActivitiServiceImpl implements ActivitiService {
             // 如果是激活，挂起操作 流程定义ID 是否挂起 挂起日期
             repositoryService.suspendProcessDefinitionById(definitionId, true, null);
         }
+    }
+
+    public void completeTask() {
+
     }
 
 
