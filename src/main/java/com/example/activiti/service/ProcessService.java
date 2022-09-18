@@ -1,5 +1,6 @@
 package com.example.activiti.service;
 
+import com.example.activiti.entity.HistoryInstInfoDTO;
 import com.example.activiti.entity.ProcessDTO;
 
 import java.util.List;
@@ -31,5 +32,10 @@ public interface ProcessService {
      */
     void getResource(String processDefinitionKey);
 
-    void getHistoryInfo(String processInstanceId);
+    /**
+     * 获取历史信息
+     * @param processInstanceId 流程实例ID
+     * @return List<HistoryInstInfoDTO>
+     */
+    List<HistoryInstInfoDTO> getHistoryInfo(String processInstanceId);
 }

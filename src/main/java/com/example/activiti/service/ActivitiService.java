@@ -1,5 +1,6 @@
 package com.example.activiti.service;
 
+import com.example.activiti.entity.vo.StartProcessInstanceVO;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.task.Task;
 
@@ -84,4 +85,13 @@ public interface ActivitiService {
      * @return 已完成的任务
      */
     Task completeTask(String processDefinitionKey, String assignee);
+
+    /**
+     * 开启流程实例
+     *
+     * @param processInstanceVO 开启流程实例参数
+     * @return result
+     */
+    boolean startProcessInstanceWithVariable(StartProcessInstanceVO processInstanceVO);
+
 }

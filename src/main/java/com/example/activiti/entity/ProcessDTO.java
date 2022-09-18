@@ -16,18 +16,18 @@ public class ProcessDTO implements Serializable {
 
     private static final long serialVersionUID = -3594378425049473136L;
 
-    @ApiModelProperty(value = "id", name = "定义的实例ID")
+    @ApiModelProperty(name = "id", value = "定义的实例ID")
     private String id;
 
-    @ApiModelProperty(value = "name", name = "定义的实例名称")
+    @ApiModelProperty(name = "name", value = "定义的实例名称")
     private String name;
 
-    @ApiModelProperty(value = "key", name = "定义的实例key")
+    @ApiModelProperty(name = "key", value = "定义的实例key")
     private String key;
 
-    @ApiModelProperty(value = "version", name = "定义的实例版本号")
+    @ApiModelProperty(name = "version", value = "定义的实例版本号")
     private int version;
 
-    @ApiModelProperty(value = "deploymentId", name = "定义的实例部署ID")
+    @ApiModelProperty(name = "deploymentId", value = "定义的实例部署ID")
     private String deploymentId;
 }

@@ -1,5 +1,6 @@
 package com.example.activiti.service.impl;
 
+import com.example.activiti.entity.HistoryInstInfoDTO;
 import com.example.activiti.entity.ProcessDTO;
 import com.example.activiti.service.ProcessService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -122,11 +122,25 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public void getHistoryInfo(String processInstanceId) {
+    public List<HistoryInstInfoDTO> getHistoryInfo(String processInstanceId) {
         HistoricActivityInstanceQuery historyQuery = historyService.createHistoricActivityInstanceQuery();
-        List<HistoricActivityInstance> historyInfos = historyQuery.processInstanceId(processInstanceId).list();
-
-
-
+        List<HistoricActivityInstance> historyInfos = historyQuery
+                // 查询actInst表
+                .processInstanceId(processInstanceId)
+                // 根据开始事件排序
+                .orderByHistoricActivityInstanceStartTime().asc()
+                .list();
+        List<HistoryInstInfoDTO> historyInstInfoDTOS = new ArrayList<>(historyInfos.size());
+        for (HistoricActivityInstance history : historyInfos) {
+            HistoryInstInfoDTO dto = new HistoryInstInfoDTO();
+            dto.setActivityId(history.getActivityId());
+            dto.setActivityName(history.getActivityName());
+            dto.setProcessDefinitionId(history.getProcessDefinitionId());
+            dto.setProcessInstanceId(history.getProcessInstanceId());
+            dto.setStartTime(history.getStartTime());
+            dto.setEndTime(history.getEndTime());
+            historyInstInfoDTOS.add(dto);
+        }
+        return historyInstInfoDTOS;
     }
 }

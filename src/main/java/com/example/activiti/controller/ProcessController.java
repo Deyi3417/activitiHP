@@ -1,5 +1,6 @@
 package com.example.activiti.controller;
 
+import com.example.activiti.entity.HistoryInstInfoDTO;
 import com.example.activiti.entity.ProcessDTO;
 import com.example.activiti.service.ProcessService;
 import io.swagger.annotations.Api;
@@ -40,9 +41,9 @@ public class ProcessController {
     }
 
     @GetMapping("/history/{processInstanceId}")
-    public Object getHistoryInfo(@PathVariable(value = "processInstanceId") String processInstanceId) {
-        processService.getHistoryInfo(processInstanceId);
-        return null;
+    public List<HistoryInstInfoDTO> getHistoryInfo(@PathVariable(value = "processInstanceId") String processInstanceId) {
+        List<HistoryInstInfoDTO> historyInfo = processService.getHistoryInfo(processInstanceId);
+        return historyInfo;
     }
 
 }

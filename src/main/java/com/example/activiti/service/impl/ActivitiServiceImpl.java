@@ -1,5 +1,6 @@
 package com.example.activiti.service.impl;
 
+import com.example.activiti.entity.vo.StartProcessInstanceVO;
 import com.example.activiti.service.ActivitiService;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
@@ -13,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author : HP
@@ -50,7 +53,7 @@ public class ActivitiServiceImpl implements ActivitiService {
     }
 
     @Override
-    public List<Task>  getTasks(String assignee) {
+    public List<Task> getTasks(String assignee) {
         List<Task> list = taskService.createTaskQuery()
                 .taskAssignee(assignee).list();
         log.info("========list:========{}", list);
@@ -66,10 +69,10 @@ public class ActivitiServiceImpl implements ActivitiService {
         log.info("========tasks:========{}", tasks);
         // 打印部分信息
         for (Task task : tasks) {
-            log.info("========流程实例ID:task.getProcessInstanceId()========{}",task.getProcessInstanceId());
-            log.info("========任务ID:task.getId()========{}",task.getId());
-            log.info("========任务名称:task.getName()========{}",task.getName());
-            log.info("========任务负责人:task.getAssignee()========{}",task.getAssignee());
+            log.info("========流程实例ID:task.getProcessInstanceId()========{}", task.getProcessInstanceId());
+            log.info("========任务ID:task.getId()========{}", task.getId());
+            log.info("========任务名称:task.getName()========{}", task.getName());
+            log.info("========任务负责人:task.getAssignee()========{}", task.getAssignee());
         }
         return tasks;
     }
@@ -90,14 +93,13 @@ public class ActivitiServiceImpl implements ActivitiService {
         if (task == null) {
             return null;
         }
-        log.info("========流程实例ID:task.getProcessInstanceId()========{}",task.getProcessInstanceId());
-        log.info("========任务ID:task.getId()========{}",task.getId());
-        log.info("========任务名称:task.getName()========{}",task.getName());
-        log.info("========任务负责人:task.getAssignee()========{}",task.getAssignee());
+        log.info("========流程实例ID:task.getProcessInstanceId()========{}", task.getProcessInstanceId());
+        log.info("========任务ID:task.getId()========{}", task.getId());
+        log.info("========任务名称:task.getName()========{}", task.getName());
+        log.info("========任务负责人:task.getAssignee()========{}", task.getAssignee());
         taskService.complete(task.getId());
         return task;
     }
-
 
     @Override
     public Deployment deployBpmn(String bpmnName, String filePathAndName, String pngPath) {
@@ -157,7 +159,44 @@ public class ActivitiServiceImpl implements ActivitiService {
         return false;
     }
 
+    /**
+     * 启动流程的过程中，添加businessKey
+     * 绑定 BusinessKey
+     */
+    public void addBusinessKey(String processDefinitionKey, String businessKey) {
+        // 第一个参数：流程定义的key  第二个参数：businessKey
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey, businessKey);
+        String businessKeyRes = processInstance.getBusinessKey();
+        log.info("========businessKey========{}", businessKeyRes);
+    }
 
+    @Override
+    public boolean startProcessInstanceWithVariable(StartProcessInstanceVO processInstanceVO) {
+        String processDefinitionKey = processInstanceVO.getProcessDefinitionKey();
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("assignee0", processInstanceVO.getAssignee0());
+        variables.put("assignee1", processInstanceVO.getAssignee1());
+        variables.put("assignee2", processInstanceVO.getAssignee2());
+        variables.put("assignee3", processInstanceVO.getAssignee3());
+        ProcessInstance instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
+        if (instance.getId().length() > 0) {
+            // 获取流程启动产生的taskId
+            String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId())
+                    .singleResult().getId();
+            log.info("=======taskId========{}", taskId);
+            log.info("=======instance.getProcessInstanceId()========{}", instance.getProcessInstanceId());
+            log.info("=======instance.getProcessDefinitionId()========{}", instance.getProcessDefinitionId());
+            Map<String, Object> processVariables = instance.getProcessVariables();
+            log.info("=======processVariables========{}", processVariables);
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 单个流程的挂起和激活
+     */
     public void suspendSingleProcessInstance() {
         // 流程实例挂起-单个挂起
         ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId("27501").singleResult();
@@ -172,15 +211,22 @@ public class ActivitiServiceImpl implements ActivitiService {
         }
     }
 
+    /**
+     * 多个流程的挂起和激活
+     */
     public void suspendAllProcessInstance() {
         // 流程实例挂起-所有
         ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey("a0914").singleResult();
         boolean suspended = processDefinition.isSuspended();
         String definitionId = processDefinition.getId();
         if (suspended) {
+            // 如果是挂起，激活操作 流程定义ID 是否激活 激活日期
             repositoryService.activateProcessDefinitionById(definitionId, true, null);
         } else {
-            repositoryService.suspendProcessDefinitionById(definitionId,true,null);
+            // 如果是激活，挂起操作 流程定义ID 是否挂起 挂起日期
+            repositoryService.suspendProcessDefinitionById(definitionId, true, null);
         }
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.example.activiti.controller;
 
 import com.example.activiti.entity.TaskRepresentation;
+import com.example.activiti.entity.vo.StartProcessInstanceVO;
 import com.example.activiti.service.ActivitiService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -64,6 +65,13 @@ public class ActivitiController {
     @ApiOperation("启动流程实例")
     public Object startFlowWork(@RequestParam(value = "processDefinitionKey") String processDefinitionKey) {
         boolean flag = activitiService.startFlowWork(processDefinitionKey);
+        return flag;
+    }
+
+    @PostMapping("/startInst")
+    @ApiOperation("启动流程实例，包含Map的参数变量")
+    public Object startProcessInstanceWithVariable(@RequestBody StartProcessInstanceVO processInstanceVO) {
+        boolean flag = activitiService.startProcessInstanceWithVariable(processInstanceVO);
         return flag;
     }
 
