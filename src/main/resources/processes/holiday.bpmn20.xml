@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="a0914" name="holiday" isExecutable="true">
+    <documentation>去度假了，要请假</documentation>
+    <startEvent id="holiday_start" name="start">
+      <documentation>度假流程开始标志-start</documentation>
+    </startEvent>
+    <userTask id="holiday_submit" name="sumbit" activiti:assignee="liudy23" activiti:candidateUsers="suyao">
+      <documentation>提交度假流程</documentation>
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://activiti.com/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-1050DDB7-407B-4213-AE9E-8B02647D0283" sourceRef="holiday_start" targetRef="holiday_submit"></sequenceFlow>
+    <userTask id="holiday_director" name="director approval" activiti:assignee="gec2">
+      <documentation>所长审批</documentation>
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://activiti.com/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-03D45B2E-D6E0-4C62-ACB5-057FCA197ADD" sourceRef="holiday_submit" targetRef="holiday_director"></sequenceFlow>
+    <userTask id="holiday_manager" name="manager approval" activiti:assignee="zengwb">
+      <documentation>总经理审批</documentation>
+      <extensionElements>
+        <modeler:initiator-can-complete xmlns:modeler="http://activiti.com/modeler"><![CDATA[false]]></modeler:initiator-can-complete>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="sid-26FC29D2-8448-43CB-AA37-8975B5957069" sourceRef="holiday_director" targetRef="holiday_manager"></sequenceFlow>
+    <endEvent id="holiday_end" name="end">
+      <documentation>独家流程结束标志-end</documentation>
+    </endEvent>
+    <sequenceFlow id="sid-533F0D51-1496-4057-B444-6D2114AD3954" sourceRef="holiday_manager" targetRef="holiday_end"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_a0914">
+    <bpmndi:BPMNPlane bpmnElement="a0914" id="BPMNPlane_a0914">
+      <bpmndi:BPMNShape bpmnElement="holiday_start" id="BPMNShape_holiday_start">
+        <omgdc:Bounds height="30.0" width="30.0" x="70.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="holiday_submit" id="BPMNShape_holiday_submit">
+        <omgdc:Bounds height="79.99999999999999" width="100.0" x="180.0" y="115.00000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="holiday_director" id="BPMNShape_holiday_director">
+        <omgdc:Bounds height="79.99999999999999" width="100.0" x="340.0" y="115.00000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="holiday_manager" id="BPMNShape_holiday_manager">
+        <omgdc:Bounds height="79.99999999999999" width="100.0" x="510.0" y="115.00000000000001"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="holiday_end" id="BPMNShape_holiday_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="655.0" y="141.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-1050DDB7-407B-4213-AE9E-8B02647D0283" id="BPMNEdge_sid-1050DDB7-407B-4213-AE9E-8B02647D0283">
+        <omgdi:waypoint x="100.0" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="180.0" y="155.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-03D45B2E-D6E0-4C62-ACB5-057FCA197ADD" id="BPMNEdge_sid-03D45B2E-D6E0-4C62-ACB5-057FCA197ADD">
+        <omgdi:waypoint x="280.0" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="340.0" y="155.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-533F0D51-1496-4057-B444-6D2114AD3954" id="BPMNEdge_sid-533F0D51-1496-4057-B444-6D2114AD3954">
+        <omgdi:waypoint x="610.0" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="655.0" y="155.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-26FC29D2-8448-43CB-AA37-8975B5957069" id="BPMNEdge_sid-26FC29D2-8448-43CB-AA37-8975B5957069">
+        <omgdi:waypoint x="440.0" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="155.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

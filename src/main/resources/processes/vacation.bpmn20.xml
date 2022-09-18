@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="vacation0916" name="vacation" isExecutable="true">
+    <documentation>liudy23 部署度假流程</documentation>
+    <startEvent id="vavation_start" name="startEvent"/>
+    <userTask id="vacation_submit" name="创建度假流程" activiti:assignee="张三"/>
+    <userTask id="vacation_manager" name="经理审批" activiti:assignee="李四"/>
+    <userTask id="vacation_director" name="总经理审批" activiti:assignee="王五"/>
+    <endEvent id="vacation_end" name="endEvent"/>
+    <sequenceFlow id="sid-81f44a93-b37c-4845-ac95-5798d4b79a08" sourceRef="vavation_start" targetRef="vacation_submit"/>
+    <sequenceFlow id="sid-af48802f-b342-4f36-a24d-5643a9d2d51b" sourceRef="vacation_submit" targetRef="vacation_manager"/>
+    <sequenceFlow id="sid-88e68f5b-41f9-468f-b89a-bb905d4091b5" sourceRef="vacation_manager" targetRef="vacation_director"/>
+    <sequenceFlow id="sid-76e8685f-3680-45a4-902b-722b41b5c1b3" sourceRef="vacation_director" targetRef="vacation_end"/>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_vacation">
+    <bpmndi:BPMNPlane bpmnElement="vacation0916" id="BPMNPlane_vacation">
+      <bpmndi:BPMNShape id="shape-c5a0bb9a-ca8a-47ec-9890-d2d5087cb8d7" bpmnElement="vavation_start">
+        <omgdc:Bounds x="-110.0" y="-230.0" width="30.0" height="30.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-976543ee-8318-43b4-ad4a-c8c9f3feb4ef" bpmnElement="vacation_submit">
+        <omgdc:Bounds x="-145.0" y="-170.0" width="100.0" height="80.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-42130eb6-e326-42b5-b6b6-306c0461a8f5" bpmnElement="vacation_manager">
+        <omgdc:Bounds x="-145.0" y="-55.0" width="100.0" height="80.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-254ea167-b6b0-46b5-8508-0e476122b699" bpmnElement="vacation_director">
+        <omgdc:Bounds x="-145.0" y="65.0" width="100.0" height="80.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape-ab653554-df06-4bfd-99ec-cab2456cac4f" bpmnElement="vacation_end">
+        <omgdc:Bounds x="-110.0" y="190.0" width="30.0" height="30.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge-049bc874-69b7-4efa-94f7-d23513336b3a" bpmnElement="sid-81f44a93-b37c-4845-ac95-5798d4b79a08">
+        <omgdi:waypoint x="-95.0" y="-200.0"/>
+        <omgdi:waypoint x="-95.0" y="-170.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-b1890a53-34b7-4a59-a523-ea169b60a9e1" bpmnElement="sid-af48802f-b342-4f36-a24d-5643a9d2d51b">
+        <omgdi:waypoint x="-95.0" y="-90.0"/>
+        <omgdi:waypoint x="-95.0" y="-55.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-f40ec5cf-db14-4f74-b6b3-b1bc164de49d" bpmnElement="sid-88e68f5b-41f9-468f-b89a-bb905d4091b5">
+        <omgdi:waypoint x="-95.0" y="25.0"/>
+        <omgdi:waypoint x="-95.0" y="65.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge-d4e557cc-0c1b-41ca-b4ff-e3ecfa95644e" bpmnElement="sid-76e8685f-3680-45a4-902b-722b41b5c1b3">
+        <omgdi:waypoint x="-95.0" y="145.0"/>
+        <omgdi:waypoint x="-95.0" y="190.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
