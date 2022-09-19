@@ -2,6 +2,7 @@ package com.example.activiti.service.impl;
 
 import com.example.activiti.entity.HistoryInstInfoDTO;
 import com.example.activiti.entity.ProcessDTO;
+import com.example.activiti.entity.TaskRepresentation;
 import com.example.activiti.service.ProcessService;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.HistoryService;
@@ -12,6 +13,7 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
+import org.activiti.engine.task.Task;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -142,5 +144,68 @@ public class ProcessServiceImpl implements ProcessService {
             historyInstInfoDTOS.add(dto);
         }
         return historyInstInfoDTOS;
+    }
+
+    @Override
+    public List<TaskRepresentation> findGroupTask(String processDefinitionKey, String candidateUserName) {
+        // 查询组任务
+        List<Task> taskList = taskService.createTaskQuery()
+                .processDefinitionKey(processDefinitionKey)
+                .taskCandidateUser(candidateUserName)
+                .list();
+        List<TaskRepresentation> resultTasks = new ArrayList<>(taskList.size());
+        for (Task task : taskList) {
+            resultTasks.add(new TaskRepresentation(task.getId(),task.getName()));
+        }
+        log.info("=========resultTasks========={}", resultTasks);
+        return resultTasks;
+    }
+
+    @Override
+    public boolean claimTask(String taskId, String candidateUserName) {
+        // 查询任务
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                // 候选人 未指派
+                .taskCandidateUser(candidateUserName)
+                .singleResult();
+        if (task != null) {
+            // 拾取任务
+            taskService.claim(taskId, candidateUserName);
+            log.info("taskId==={}  候选人==={}",taskId, candidateUserName);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean returnTask(String taskId, String assignee) {
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                // 做任务的人 已指派
+                .taskAssignee(assignee)
+                .singleResult();
+        if (task != null) {
+            taskService.setAssignee(taskId,null);
+            log.info("{}==taskId  已归还任务====", taskId);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean taskHandover(String taskId, String assignee, String candidateUser) {
+        // 根据taskId和assignee找到当前任务
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .taskAssignee(assignee)
+                .singleResult();
+        if (task != null) {
+            // 将给定任务的受理人更改为给定的 userId。不检查用户是否为身份组件所知。
+            taskService.setAssignee(taskId, candidateUser);
+            log.info("{}====任务交接完成", taskId);
+            return true;
+        }
+        return false;
     }
 }

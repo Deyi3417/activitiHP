@@ -1,5 +1,6 @@
 package com.example.activiti.controller;
 
+import com.example.activiti.entity.StartProcessInstanceDTO;
 import com.example.activiti.entity.TaskRepresentation;
 import com.example.activiti.entity.vo.StartProcessInstanceVO;
 import com.example.activiti.service.ActivitiService;
@@ -72,6 +73,13 @@ public class ActivitiController {
     @ApiOperation("启动流程实例，包含Map的参数变量")
     public Object startProcessInstanceWithVariable(@RequestBody StartProcessInstanceVO processInstanceVO) {
         boolean flag = activitiService.startProcessInstanceWithVariable(processInstanceVO);
+        return flag;
+    }
+
+    @PostMapping("/startInst02")
+    @ApiOperation("启动流程实例，传递参数-StartProcessInstanceDTO")
+    public Object startProcessInstanceWithVariable02(@RequestBody StartProcessInstanceDTO startProcessInstanceDTO) {
+        boolean flag = activitiService.startProcessInstanceWithVariable(startProcessInstanceDTO);
         return flag;
     }
 

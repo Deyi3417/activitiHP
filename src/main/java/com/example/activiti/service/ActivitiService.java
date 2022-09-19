@@ -1,5 +1,6 @@
 package com.example.activiti.service;
 
+import com.example.activiti.entity.StartProcessInstanceDTO;
 import com.example.activiti.entity.vo.StartProcessInstanceVO;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.task.Task;
@@ -94,4 +95,11 @@ public interface ActivitiService {
      */
     boolean startProcessInstanceWithVariable(StartProcessInstanceVO processInstanceVO);
 
+    /**
+     * 开始流程实例
+     *
+     * @param startProcessInstanceDTO 开启流程实例所带参数，请假天数，指派人等参数
+     * @return boolean-是否开启成功
+     */
+    boolean startProcessInstanceWithVariable(StartProcessInstanceDTO startProcessInstanceDTO);
 }

@@ -1,5 +1,8 @@
 package com.example.activiti.service.impl;
+import java.util.Date;
 
+import com.example.activiti.entity.Evection;
+import com.example.activiti.entity.StartProcessInstanceDTO;
 import com.example.activiti.entity.vo.StartProcessInstanceVO;
 import com.example.activiti.service.ActivitiService;
 import lombok.extern.slf4j.Slf4j;
@@ -85,9 +88,17 @@ public class ActivitiServiceImpl implements ActivitiService {
         // 完成任务前，需要校验负责人可以完成当前任务
         // 根据任务id 和 任务负责人查询当前任务，如果查到该用户由权限，就完成
         Task task = taskService.createTaskQuery().taskId(taskId).taskAssignee(assignee).singleResult();
+        Evection evection = new Evection();
+        evection.setNum(2D);
+        evection.setReason("任务办理时设置变量");
+        HashMap<String, Object> variables = new HashMap<>();
+        variables.put("evection", evection);
         if (task != null) {
-            taskService.complete(taskId);
+            // 完成任务时，设置流程变量参数
+            taskService.complete(taskId, variables);
             log.info("========完成任务========{}", task.getId());
+        } else {
+            log.info("========{}没有任务，无法完成任务========", assignee);
         }
 
     }
@@ -196,6 +207,36 @@ public class ActivitiServiceImpl implements ActivitiService {
         variables.put("assignee1", processInstanceVO.getAssignee1());
         variables.put("assignee2", processInstanceVO.getAssignee2());
         variables.put("assignee3", processInstanceVO.getAssignee3());
+        ProcessInstance instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
+        if (instance.getId().length() > 0) {
+            // 获取流程启动产生的taskId
+            String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).singleResult().getId();
+            log.info("=======taskId========{}", taskId);
+            log.info("=======instance.getProcessInstanceId()========{}", instance.getProcessInstanceId());
+            log.info("=======instance.getProcessDefinitionId()========{}", instance.getProcessDefinitionId());
+            Map<String, Object> processVariables = instance.getProcessVariables();
+            log.info("=======processVariables========{}", processVariables);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean startProcessInstanceWithVariable(StartProcessInstanceDTO startProcessInstanceDTO) {
+        String processDefinitionKey = startProcessInstanceDTO.getProcessDefinitionKey();
+        HashMap<String, Object> variables = new HashMap<>();
+        // 指派的人
+        variables.put("assignee0", startProcessInstanceDTO.getAssignee0());
+        variables.put("assignee1", startProcessInstanceDTO.getAssignee1());
+        variables.put("assignee2", startProcessInstanceDTO.getAssignee2());
+        variables.put("assignee3", startProcessInstanceDTO.getAssignee3());
+        // 出差天数，不同的出差天数，流程节点不同
+        Double num = startProcessInstanceDTO.getNum();
+        Evection evection = new Evection();
+        evection.setNum(num);
+        evection.setReason(startProcessInstanceDTO.getReason());
+        variables.put("evection", evection);
+
         ProcessInstance instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
         if (instance.getId().length() > 0) {
             // 获取流程启动产生的taskId
