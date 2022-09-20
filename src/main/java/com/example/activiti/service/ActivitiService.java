@@ -6,6 +6,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.task.Task;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author : HP
@@ -102,4 +103,13 @@ public interface ActivitiService {
      * @return boolean-是否开启成功
      */
     boolean startProcessInstanceWithVariable(StartProcessInstanceDTO startProcessInstanceDTO);
+
+    /**
+     * 开始流程实例
+     *
+     * @param processDefinitionKey 流程定义实例key
+     * @param variables            开启流程实例所需参数
+     * @return true or false
+     */
+    boolean startProcessInstanceWithVariable(String processDefinitionKey, Map<String, Object> variables);
 }

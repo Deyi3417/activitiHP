@@ -179,6 +179,19 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
+    public boolean claimTask02(String taskId, String candidateUserName) {
+        Task task = taskService.createTaskQuery()
+                .processInstanceId("7501")
+                .taskId(taskId).singleResult();
+        if (task != null) {
+            log.info("========claimTask02========7501====taskId:{}, taskName:{}",taskId, task.getName());
+            taskService.claim(taskId, candidateUserName);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean returnTask(String taskId, String assignee) {
         Task task = taskService.createTaskQuery()
                 .taskId(taskId)

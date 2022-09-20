@@ -60,6 +60,9 @@ public interface ProcessService {
      */
     boolean claimTask(String taskId, String candidateUserName);
 
+    boolean claimTask02(String taskId, String candidateUserName);
+
+
     /**
      * 归还任务: 将 act_ru_task 表的字段 ASSIGNEE_ 置为 null
      *

@@ -1,4 +1,5 @@
 package com.example.activiti.service.impl;
+
 import java.util.Date;
 
 import com.example.activiti.entity.Evection;
@@ -208,17 +209,8 @@ public class ActivitiServiceImpl implements ActivitiService {
         variables.put("assignee2", processInstanceVO.getAssignee2());
         variables.put("assignee3", processInstanceVO.getAssignee3());
         ProcessInstance instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
-        if (instance.getId().length() > 0) {
-            // 获取流程启动产生的taskId
-            String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).singleResult().getId();
-            log.info("=======taskId========{}", taskId);
-            log.info("=======instance.getProcessInstanceId()========{}", instance.getProcessInstanceId());
-            log.info("=======instance.getProcessDefinitionId()========{}", instance.getProcessDefinitionId());
-            Map<String, Object> processVariables = instance.getProcessVariables();
-            log.info("=======processVariables========{}", processVariables);
-            return true;
-        }
-        return false;
+        // 打印流程实例信息
+        return printProcessInstanceInfo(instance);
     }
 
     @Override
@@ -238,6 +230,35 @@ public class ActivitiServiceImpl implements ActivitiService {
         variables.put("evection", evection);
 
         ProcessInstance instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
+        boolean flag = printProcessInstanceInfo(instance);
+        return flag;
+    }
+
+    @Override
+    public boolean startProcessInstanceWithVariable(String processDefinitionKey, Map<String, Object> variables) {
+        /*
+        开始流程实例，会产生一个流程实例ID，将该流程实例ID进行存储到业务表即可，方便后续的调用
+        使用给定键在流程定义的最新版本中启动一个新流程实例。
+        可以提供业务键来将流程实例与具有明确业务含义的特定标识符相关联。
+        例如，在订单流程中，业务键可以是订单 ID。然后可以使用此业务密钥轻松查找该流程实例，
+        processdefinitionKey-businessKey 的组合必须是唯一的。
+        参数：
+        processDefinitionKey – 流程定义的键，不能为空。
+        businessKey – 唯一标识上下文或给定流程定义中的流程实例的键。
+        variables - 要传递的变量，可以为 null。
+         */
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
+        // runtimeService.startProcessInstanceByKey(processDefinitionKey,"businessKey",variables);
+        return printProcessInstanceInfo(processInstance);
+    }
+
+    /**
+     * 启动流程实例时，打印流程实例信息
+     *
+     * @param instance 流程实例
+     * @return true or false
+     */
+    private boolean printProcessInstanceInfo(ProcessInstance instance) {
         if (instance.getId().length() > 0) {
             // 获取流程启动产生的taskId
             String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).singleResult().getId();

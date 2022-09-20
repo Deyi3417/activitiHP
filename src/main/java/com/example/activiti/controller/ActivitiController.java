@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author : HP
@@ -70,16 +71,23 @@ public class ActivitiController {
     }
 
     @PostMapping("/startInst")
-    @ApiOperation("启动流程实例，包含Map的参数变量")
+    @ApiOperation("启动流程实例01，包含Map的参数变量")
     public Object startProcessInstanceWithVariable(@RequestBody StartProcessInstanceVO processInstanceVO) {
         boolean flag = activitiService.startProcessInstanceWithVariable(processInstanceVO);
         return flag;
     }
 
     @PostMapping("/startInst02")
-    @ApiOperation("启动流程实例，传递参数-StartProcessInstanceDTO")
+    @ApiOperation("启动流程实例02，传递参数-StartProcessInstanceDTO")
     public Object startProcessInstanceWithVariable02(@RequestBody StartProcessInstanceDTO startProcessInstanceDTO) {
         boolean flag = activitiService.startProcessInstanceWithVariable(startProcessInstanceDTO);
+        return flag;
+    }
+
+    @PostMapping("/startInst003")
+    @ApiOperation("启动流程实例03，传递参数1: processDefinitionKey 参数2: Map<String, Object> variables")
+    public Object startProcessInstanceWithVariable03(@RequestParam String processDefinitionKey, @RequestBody Map<String, Object> variables) {
+        boolean flag = activitiService.startProcessInstanceWithVariable(processDefinitionKey, variables);
         return flag;
     }
 

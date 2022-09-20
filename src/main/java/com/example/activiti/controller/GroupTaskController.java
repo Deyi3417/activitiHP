@@ -38,6 +38,13 @@ public class GroupTaskController {
         return flag;
     }
 
+    @PostMapping("/claimTask02")
+    @ApiOperation("拾取任务 参数1：taskId 参数2：candidateUserName")
+    public Object claimTask02(@RequestParam String taskId, @RequestParam String candidateUserName) {
+        boolean flag = processService.claimTask02(taskId, candidateUserName);
+        return flag;
+    }
+
     @PostMapping("/returnTask")
     @ApiOperation("归还任务 参数1：taskId 参数2：assignee")
     public Object returnTask(@RequestParam String taskId, @RequestParam String assignee) {
