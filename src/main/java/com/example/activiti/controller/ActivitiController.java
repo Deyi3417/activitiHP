@@ -35,6 +35,7 @@ public class ActivitiController {
         Deployment deployment = activitiService.deployBpmn(bpmnName, filePathAndName);
         log.info("deployment:" + deployment);
         if (StringUtils.isBlank(deployment.getId())) {
+            log.info("====部署ID:{}====部署时间：{}",deployment.getId(),deployment.getDeploymentTime());
             return false;
         }
         return true;
@@ -129,6 +130,17 @@ public class ActivitiController {
         Task task = activitiService.completeTask(processDefinitionKey, assignee);
         if (task == null) {
             return "该流程实例下用户"+assignee+"当前无任务";
+        }
+        TaskRepresentation taskRepresentation = new TaskRepresentation(task.getId(), task.getName());
+        return taskRepresentation;
+    }
+
+    @PostMapping("/complete02")
+    @ApiOperation("完成个人任务02，带参数完成个人任务Map<String, Object> variables")
+    public Object completeTasksWithVariables(@RequestParam String taskId, @RequestBody Map<String, Object> variables) {
+        Task task = activitiService.completeTask(taskId,variables);
+        if (task == null) {
+            return "完成任务失败";
         }
         TaskRepresentation taskRepresentation = new TaskRepresentation(task.getId(), task.getName());
         return taskRepresentation;

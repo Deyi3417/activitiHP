@@ -53,7 +53,7 @@ public class GroupTaskController {
     }
 
     @PostMapping("/taskHandover")
-    @ApiOperation("归还任务 参数: taskHandoverVO")
+    @ApiOperation("任务转派 参数: taskHandoverVO")
     public Object taskHandover(@RequestBody TaskHandoverVO taskHandoverVO) {
         String taskId = taskHandoverVO.getTaskId();
         String assignee = taskHandoverVO.getAssignee();

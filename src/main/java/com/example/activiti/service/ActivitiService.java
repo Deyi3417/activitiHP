@@ -89,6 +89,15 @@ public interface ActivitiService {
     Task completeTask(String processDefinitionKey, String assignee);
 
     /**
+     * 完成个人任务
+     *
+     * @param taskId    任务ID
+     * @param variables 带参数完成任务
+     * @return task
+     */
+    Task completeTask(String taskId, Map<String, Object> variables);
+
+    /**
      * 开启流程实例
      *
      * @param processInstanceVO 开启流程实例参数

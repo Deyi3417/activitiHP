@@ -1,15 +1,16 @@
 package com.example.activiti.service.impl;
 
-import java.util.Date;
-
 import com.example.activiti.entity.Evection;
 import com.example.activiti.entity.StartProcessInstanceDTO;
 import com.example.activiti.entity.vo.StartProcessInstanceVO;
 import com.example.activiti.service.ActivitiService;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -39,6 +40,9 @@ public class ActivitiServiceImpl implements ActivitiService {
     @Autowired
     private RepositoryService repositoryService;
 
+    @Autowired
+    private ProcessEngineConfiguration processEngineConfiguration;
+
     @Override
     public void startProcess() {
         ProcessInstance test = runtimeService.startProcessInstanceByKey("test");
@@ -47,8 +51,13 @@ public class ActivitiServiceImpl implements ActivitiService {
 
     @Override
     public Deployment deployBpmn(String bpmnName, String filePathAndName) {
+        processEngineConfiguration.setActivityFontName("宋体");
+        processEngineConfiguration.setLabelFontName("宋体");
+        processEngineConfiguration.setAnnotationFontName("宋体");
+        Context.setProcessEngineConfiguration((ProcessEngineConfigurationImpl) processEngineConfiguration);
         Deployment deploy = repositoryService.createDeployment().name(bpmnName).addClasspathResource(filePathAndName).deploy();
         log.info("========部署完成========{}", deploy);
+
         return deploy;
     }
 
@@ -120,7 +129,27 @@ public class ActivitiServiceImpl implements ActivitiService {
     }
 
     @Override
+    public Task completeTask(String taskId, Map<String, Object> variables) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        /*
+        当任务成功执行时调用，所需的任务参数由最终用户给出。
+        参数：
+        taskId – 要完成的任务的 id，不能为空。
+        变量——任务参数。可以为 null 或为空。
+         */
+        if (task != null) {
+            taskService.complete(taskId, variables);
+            return task;
+        }
+        return null;
+    }
+
+    @Override
     public Deployment deployBpmn(String bpmnName, String filePathAndName, String pngPath) {
+        processEngineConfiguration.setActivityFontName("宋体");
+        processEngineConfiguration.setLabelFontName("宋体");
+        processEngineConfiguration.setAnnotationFontName("宋体");
+        Context.setProcessEngineConfiguration((ProcessEngineConfigurationImpl) processEngineConfiguration);
         Deployment deploy = repositoryService.createDeployment().name(bpmnName).addClasspathResource(filePathAndName).addClasspathResource(pngPath).deploy();
         log.info("========部署完成========{}", deploy);
         return deploy;
@@ -307,7 +336,7 @@ public class ActivitiServiceImpl implements ActivitiService {
         }
     }
 
-    public void completeTask() {
+    public void reject() {
 
     }
 
