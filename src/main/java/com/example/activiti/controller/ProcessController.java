@@ -8,6 +8,7 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -44,6 +45,18 @@ public class ProcessController {
     public List<HistoryInstInfoDTO> getHistoryInfo(@PathVariable(value = "processInstanceId") String processInstanceId) {
         List<HistoryInstInfoDTO> historyInfo = processService.getHistoryInfo(processInstanceId);
         return historyInfo;
+    }
+
+    @GetMapping("read-resource")
+    public void readResource(String processInstanceId, HttpServletResponse response) {
+        // 设置页面不缓存
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        String processDefinitionId = "";
+
+
     }
 
 }
