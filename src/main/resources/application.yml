@@ -21,7 +21,7 @@ spring:
 
 # ??
 server:
-  port: 8888
+  port: 8083
 
 
 # Swagger configuration information

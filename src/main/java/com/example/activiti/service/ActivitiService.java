@@ -121,4 +121,15 @@ public interface ActivitiService {
      * @return true or false
      */
     boolean startProcessInstanceWithVariable(String processDefinitionKey, Map<String, Object> variables);
+
+    /**
+     * 完成任务
+     *
+     * @param processInstId 流程实例ID
+     * @param variables     流程变量
+     * @param auditRemark   审批结论
+     * @param userId        用户ID
+     * @return
+     */
+    Task completeTask03(String processInstId, Map<String, Object> variables, String auditRemark, String userId);
 }

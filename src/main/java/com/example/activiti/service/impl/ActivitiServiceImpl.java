@@ -11,6 +11,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.context.Context;
+import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -279,6 +280,19 @@ public class ActivitiServiceImpl implements ActivitiService {
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(processDefinitionKey, variables);
         // runtimeService.startProcessInstanceByKey(processDefinitionKey,"businessKey",variables);
         return printProcessInstanceInfo(processInstance);
+    }
+
+    @Override
+    public Task completeTask03(String processInstId, Map<String, Object> variables, String auditRemark, String userId) {
+        Task task = taskService.createTaskQuery().processInstanceId(processInstId).taskAssignee(userId).singleResult();
+        if (task != null) {
+            Authentication.setAuthenticatedUserId(userId);
+            taskService.addComment(task.getId(), task.getProcessInstanceId(), auditRemark);
+            taskService.resolveTask(task.getId(), variables);
+            taskService.complete(task.getId(), variables);
+            return task;
+        }
+        return null;
     }
 
     /**

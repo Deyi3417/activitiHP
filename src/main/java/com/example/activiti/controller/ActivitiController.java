@@ -146,6 +146,17 @@ public class ActivitiController {
         return taskRepresentation;
     }
 
+    @PostMapping("/complete03")
+    @ApiOperation("完成个人任务02，带参数完成个人任务Map<String, Object> variables")
+    public Object completeTasksWithVariables03(@RequestParam String processInstId, @RequestBody Map<String, Object> variables, @RequestParam String auditRemark, @RequestParam String userId) {
+        Task task = activitiService.completeTask03(processInstId,variables, auditRemark, userId);
+        if (task == null) {
+            return "完成任务失败";
+        }
+        TaskRepresentation taskRepresentation = new TaskRepresentation(task.getId(), task.getName());
+        return taskRepresentation;
+    }
+
 
     @PostMapping("/process")
     @ApiOperation("process")
