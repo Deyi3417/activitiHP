@@ -147,7 +147,7 @@ public class ActivitiController {
     }
 
     @PostMapping("/complete03")
-    @ApiOperation("完成个人任务02，带参数完成个人任务Map<String, Object> variables")
+    @ApiOperation("完成个人任务03，processInstId--variables--auditRemark--userId")
     public Object completeTasksWithVariables03(@RequestParam String processInstId, @RequestBody Map<String, Object> variables, @RequestParam String auditRemark, @RequestParam String userId) {
         Task task = activitiService.completeTask03(processInstId,variables, auditRemark, userId);
         if (task == null) {

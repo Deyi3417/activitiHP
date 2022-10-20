@@ -1,14 +1,12 @@
 package com.example.activiti.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.example.activiti.entity.Evection;
 import com.example.activiti.entity.StartProcessInstanceDTO;
 import com.example.activiti.entity.vo.StartProcessInstanceVO;
 import com.example.activiti.service.ActivitiService;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.TaskService;
+import org.activiti.engine.*;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.context.Context;
 import org.activiti.engine.impl.identity.Authentication;
@@ -43,6 +41,9 @@ public class ActivitiServiceImpl implements ActivitiService {
 
     @Autowired
     private ProcessEngineConfiguration processEngineConfiguration;
+
+    @Autowired
+    private IdentityService identityService;
 
     @Override
     public void startProcess() {
@@ -283,12 +284,19 @@ public class ActivitiServiceImpl implements ActivitiService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Task completeTask03(String processInstId, Map<String, Object> variables, String auditRemark, String userId) {
         Task task = taskService.createTaskQuery().processInstanceId(processInstId).taskAssignee(userId).singleResult();
+        String taskId = task.getId();
         if (task != null) {
-            Authentication.setAuthenticatedUserId(userId);
-            taskService.addComment(task.getId(), task.getProcessInstanceId(), auditRemark);
+            if (StringUtils.isNotEmpty(auditRemark)) {
+                identityService.setAuthenticatedUserId(userId);
+                taskService.addComment(task.getId(), task.getProcessInstanceId(), auditRemark);
+            }
+//            Authentication.setAuthenticatedUserId(userId);
+//            taskService.addComment(task.getId(), task.getProcessInstanceId(), auditRemark);
             taskService.resolveTask(task.getId(), variables);
+            taskService.claim(taskId, userId);
             taskService.complete(task.getId(), variables);
             return task;
         }

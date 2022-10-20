@@ -4,6 +4,7 @@ import com.example.activiti.entity.HistoryInstInfoDTO;
 import com.example.activiti.entity.ProcessDTO;
 import com.example.activiti.service.ProcessService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -48,15 +49,9 @@ public class ProcessController {
     }
 
     @GetMapping("read-resource")
-    public void readResource(String processInstanceId, HttpServletResponse response) {
-        // 设置页面不缓存
-        response.setHeader("Pragma", "No-cache");
-        response.setHeader("Cache-Control", "no-cache");
-        response.setDateHeader("Expires", 0);
-
-        String processDefinitionId = "";
-
-
+    @ApiOperation("获取流程图")
+    public void readResource(String processInstanceId, HttpServletResponse response) throws Exception {
+        processService.readResource(processInstanceId, response);
     }
 
 }

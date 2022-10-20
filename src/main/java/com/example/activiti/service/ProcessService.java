@@ -4,6 +4,7 @@ import com.example.activiti.entity.HistoryInstInfoDTO;
 import com.example.activiti.entity.ProcessDTO;
 import com.example.activiti.entity.TaskRepresentation;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -76,10 +77,18 @@ public interface ProcessService {
      * 任务交接： 将当前任务指派给另外一个人做
      * 将 assignee 的任务指派给 candidateUser 审批
      *
-     * @param taskId 任务ID
-     * @param assignee 当前做任务的人
+     * @param taskId        任务ID
+     * @param assignee      当前做任务的人
      * @param candidateUser 要交接、转派的人
      * @return true or false
      */
     boolean taskHandover(String taskId, String assignee, String candidateUser);
+
+    /**
+     * 获取流程图
+     *
+     * @param processInstanceId 流程实例ID
+     * @param response          response
+     */
+    void readResource(String processInstanceId, HttpServletResponse response) throws Exception;
 }
