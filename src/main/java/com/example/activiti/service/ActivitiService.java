@@ -132,4 +132,11 @@ public interface ActivitiService {
      * @return
      */
     Task completeTask03(String processInstId, Map<String, Object> variables, String auditRemark, String userId);
+
+    /**
+     * 获取流程变量
+     *
+     * @param processInstId 流程实例ID
+     */
+    void getVariables(String processInstId);
 }

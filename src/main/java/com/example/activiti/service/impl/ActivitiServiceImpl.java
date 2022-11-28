@@ -303,6 +303,16 @@ public class ActivitiServiceImpl implements ActivitiService {
         return null;
     }
 
+    @Override
+    public void getVariables(String processInstId) {
+        Task task = taskService.createTaskQuery().singleResult();
+        String executionId = task.getExecutionId();
+        Map<String, Object> variables = runtimeService.getVariables(executionId);
+        System.out.println("=========********======== " + variables);
+
+        System.out.println(variables.get("manufactureExecutor"));
+    }
+
     /**
      * 启动流程实例时，打印流程实例信息
      *

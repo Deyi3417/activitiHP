@@ -166,7 +166,8 @@ public class ActivitiController {
 
     @GetMapping("/test")
     @ApiOperation("测试")
-    public String testAction() {
+    public String testAction(@RequestParam String processInstId) {
+        activitiService.getVariables(processInstId);
         return "I am OK";
     }
 

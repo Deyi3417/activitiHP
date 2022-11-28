@@ -179,7 +179,7 @@ public class CustomProcessDiagramCanvas extends DefaultProcessDiagramCanvas {
         this.processDiagram = new BufferedImage(canvasWidth, canvasHeight, BufferedImage.TYPE_INT_RGB);
         this.g = processDiagram.createGraphics();
 
-        g.setBackground(Color.MAGENTA);
+        g.setBackground(Color.WHITE);
         g.clearRect(0,0, canvasWidth, canvasHeight);
 
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
