@@ -15,6 +15,8 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricActivityInstanceQuery;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.impl.RepositoryServiceImpl;
+import org.activiti.engine.impl.cmd.DeleteTaskCmd;
+import org.activiti.engine.impl.interceptor.CommandConfig;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
@@ -33,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,6 +62,12 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Autowired
     private ProcessEngine processEngine;
+
+    @Autowired
+    private IdentityService identityService;
+
+    @Autowired
+    private ManagementService managementService;
 
     @Override
     public List<ProcessDTO> getProcessDefByKey(String processDefinitionKey) {
@@ -223,7 +232,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public boolean taskHandover(String taskId, String assignee, String candidateUser) {
+    public boolean taskHandover(String taskId, String assignee, String candidateUser, String comment) {
         // 根据taskId和assignee找到当前任务
         Task task = taskService.createTaskQuery()
                 .taskId(taskId)
@@ -231,7 +240,13 @@ public class ProcessServiceImpl implements ProcessService {
                 .singleResult();
         if (task != null) {
             // 将给定任务的受理人更改为给定的 userId。不检查用户是否为身份组件所知。
-            taskService.setAssignee(taskId, candidateUser);
+            identityService.setAuthenticatedUserId(assignee);
+            taskService.addComment(taskId, task.getProcessInstanceId(), comment);
+
+
+
+            taskService.setAssignee(task.getId(), candidateUser);
+
             log.info("{}====任务交接完成", taskId);
             return true;
         }

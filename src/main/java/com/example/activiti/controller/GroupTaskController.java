@@ -58,7 +58,8 @@ public class GroupTaskController {
         String taskId = taskHandoverVO.getTaskId();
         String assignee = taskHandoverVO.getAssignee();
         String candidateUser = taskHandoverVO.getCandidateUser();
-        boolean flag = processService.taskHandover(taskId, assignee, candidateUser);
+        String comment = taskHandoverVO.getComment();
+        boolean flag = processService.taskHandover(taskId, assignee, candidateUser, comment);
         return flag;
     }
 }

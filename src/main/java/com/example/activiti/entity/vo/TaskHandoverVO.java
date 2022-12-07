@@ -25,4 +25,7 @@ public class TaskHandoverVO implements Serializable {
 
     @ApiModelProperty(name = "candidateUser", value = "候选人，交接人")
     private String candidateUser;
+
+    @ApiModelProperty(name = "comment", value = "转派评论")
+    private String comment;
 }
