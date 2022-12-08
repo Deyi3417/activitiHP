@@ -145,8 +145,9 @@ public class ProcessServiceImpl implements ProcessService {
         List<HistoricActivityInstance> historyInfos = historyQuery
                 // 查询actInst表
                 .processInstanceId(processInstanceId)
+                .activityType("userTask")
                 // 根据开始事件排序
-                .orderByHistoricActivityInstanceStartTime().asc()
+                .orderByHistoricActivityInstanceStartTime().desc()
                 .list();
         List<HistoryInstInfoDTO> historyInstInfoDTOS = new ArrayList<>(historyInfos.size());
         for (HistoricActivityInstance history : historyInfos) {

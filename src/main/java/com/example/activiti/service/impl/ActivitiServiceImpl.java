@@ -287,8 +287,8 @@ public class ActivitiServiceImpl implements ActivitiService {
     @Transactional(rollbackFor = Exception.class)
     public Task completeTask03(String processInstId, Map<String, Object> variables, String auditRemark, String userId) {
         Task task = taskService.createTaskQuery().processInstanceId(processInstId).taskAssignee(userId).singleResult();
-        String taskId = task.getId();
         if (task != null) {
+            String taskId = task.getId();
             if (StringUtils.isNotEmpty(auditRemark)) {
                 identityService.setAuthenticatedUserId(userId);
                 taskService.addComment(task.getId(), task.getProcessInstanceId(), auditRemark);
@@ -322,12 +322,14 @@ public class ActivitiServiceImpl implements ActivitiService {
     private boolean printProcessInstanceInfo(ProcessInstance instance) {
         if (instance.getId().length() > 0) {
             // 获取流程启动产生的taskId
-            String taskId = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).singleResult().getId();
-            log.info("=======taskId========{}", taskId);
-            log.info("=======instance.getProcessInstanceId()========{}", instance.getProcessInstanceId());
-            log.info("=======instance.getProcessDefinitionId()========{}", instance.getProcessDefinitionId());
-            Map<String, Object> processVariables = instance.getProcessVariables();
-            log.info("=======processVariables========{}", processVariables);
+            Task task = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).singleResult();
+            if (task != null) {
+                log.info("=======taskId========{}", task.getId());
+                log.info("=======instance.getProcessInstanceId()========{}", instance.getProcessInstanceId());
+                log.info("=======instance.getProcessDefinitionId()========{}", instance.getProcessDefinitionId());
+                Map<String, Object> processVariables = instance.getProcessVariables();
+                log.info("=======processVariables========{}", processVariables);
+            }
             return true;
         }
         return false;
