@@ -80,9 +80,10 @@ public interface ProcessService {
      * @param taskId        任务ID
      * @param assignee      当前做任务的人
      * @param candidateUser 要交接、转派的人
+     * @param comment       审批评论信息
      * @return true or false
      */
-    boolean taskHandover(String taskId, String assignee, String candidateUser);
+    boolean taskHandover(String taskId, String assignee, String candidateUser, String comment);
 
     /**
      * 获取流程图
