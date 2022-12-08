@@ -6,6 +6,7 @@ import com.example.activiti.entity.HistoryInstInfoDTO;
 import com.example.activiti.entity.ProcessDTO;
 import com.example.activiti.entity.TaskRepresentation;
 import com.example.activiti.service.ProcessService;
+import com.example.activiti.util.JumpAnyWhereCmd;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowNode;
@@ -26,7 +27,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.io.File;
@@ -63,10 +67,10 @@ public class ProcessServiceImpl implements ProcessService {
     @Autowired
     private ProcessEngine processEngine;
 
-    @Autowired
+    @Resource
     private IdentityService identityService;
 
-    @Autowired
+    @Resource
     private ManagementService managementService;
 
     @Override
@@ -233,21 +237,25 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean taskHandover(String taskId, String assignee, String candidateUser, String comment) {
         // 根据taskId和assignee找到当前任务
         Task task = taskService.createTaskQuery()
                 .taskId(taskId)
                 .taskAssignee(assignee)
                 .singleResult();
+        String processInstanceId = task.getProcessInstanceId();
         if (task != null) {
             // 将给定任务的受理人更改为给定的 userId。不检查用户是否为身份组件所知。
             identityService.setAuthenticatedUserId(assignee);
             taskService.addComment(taskId, task.getProcessInstanceId(), comment);
 
-
-
-            taskService.setAssignee(task.getId(), candidateUser);
-
+            managementService.executeCommand(new JumpAnyWhereCmd(task.getId(), task.getTaskDefinitionKey(),"doTransfer"));
+            Task newTask = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+            if (newTask == null) {
+                throw new RuntimeException("newTask为空");
+            }
+            taskService.setAssignee(newTask.getId(), candidateUser);
             log.info("{}====任务交接完成", taskId);
             return true;
         }
